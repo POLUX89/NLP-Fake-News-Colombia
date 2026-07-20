@@ -25,7 +25,7 @@ muestreo representativo del discurso público → sesgo de selección inherente.
 
 ## E. Speech Situation
 - Contexto: verificación periodística de declaraciones públicas.
-- Ventana temporal: `TODO` (rango de fechas del corpus).
+- Ventana temporal: ~`2020-03-24` → `2026-02-27` (rango del muestreo; n=4.756).
 - Asincrónico, escrito, editado.
 
 ## F. Text Characteristics
@@ -41,6 +41,6 @@ muestreo representativo del discurso público → sesgo de selección inherente.
   reetiqueta; usa las etiquetas tal como se publican.
 
 ## I. Known Limitations / Bias
-- **Desbalance** fuerte hacia `Falso`.
+- **Desbalance** fuerte hacia `Falso` (65 %) frente a `Verdadero` (3.4 %).
 - Sesgo de selección (qué se elige chequear) y de una **única** organización.
 - El modelo entrenado sobre este corpus reproduce ese juicio; **no** mide verdad.

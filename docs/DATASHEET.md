@@ -14,11 +14,12 @@
   con su veredicto.
 - **Campos:** `url`, `claim_reviewed` (texto), `verdict` (etiqueta),
   `pub_date`, `jsonld_types`. (`claimant`, `tags` descartados: no fiables.)
-- **Número de instancias:** `TODO` (recon en curso; ~9 fichas/página, sin fin
-  de archivo hasta la última página crawleada).
-- **Etiquetas y distribución:** `TODO`. Predominio observado de `Falso`.
-- **¿Datos faltantes?** `pub_date` ~80–90 % de cobertura; `claim_reviewed`
-  ~80 % (donde hay ClaimReview).
+- **Número de instancias:** **4.756** chequeos únicos (recon `2026-07-20`).
+- **Etiquetas y distribución:** `Falso` 65.0 % (3.093), `Cuestionable` 19.8 %
+  (940), `Chequeo Múltiple` 5.7 % (273), `Verdadero pero` 4.1 % (197),
+  `Verdadero` 3.4 % (161), sin etiqueta 1.9 % (92). Desbalance fuerte.
+- **¿Datos faltantes?** `claim_reviewed` y `pub_date` ~68 % de cobertura (donde
+  hay ClaimReview; menor en artículos antiguos). `claimant`/`tags`: 0 %.
 - **¿Información sensible/personal?** Contiene nombres de figuras públicas en el
   texto de las afirmaciones. No hay datos personales privados.
 
@@ -29,7 +30,8 @@
 - **Herramienta:** [`colombiacheck_recon.py`](../colombiacheck_recon.py).
 - **Politeness:** respeta `robots.txt` (`/chequeos` permitido), `User-Agent`
   identificado, caché local, throttling 1.5 s.
-- **Ventana temporal:** `TODO` (rango de `pub_date`).
+- **Ventana temporal:** ~`2020-03-24` → `2026-02-27` (rango del muestreo de
+  50 artículos; el rango completo puede ser mayor).
 
 ## Preprocessing / Cleaning / Labeling
 - `TODO`: normalización de etiquetas legacy (pre-2018), tratamiento de

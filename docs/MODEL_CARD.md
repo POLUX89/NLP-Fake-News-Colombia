@@ -36,10 +36,12 @@
 
 ## Evaluation & Training Data
 - Fuente: chequeos de ColombiaCheck (ver [Datasheet](DATASHEET.md)).
+  **4.756** chequeos; ~68 % con `claim_reviewed` estructurado (≈3.200 usables).
 - Split: `TODO` (estratificado por veredicto; **separación temporal** para
   evitar fuga de tema entre train/test).
-- Desbalance: fuerte predominio de `Falso` → se documenta estrategia
-  (class weights / re-muestreo) en `TODO`.
+- Desbalance: `Falso` 65 % / `Cuestionable` 19.8 % / `Chequeo Múltiple` 5.7 % /
+  `Verdadero pero` 4.1 % / `Verdadero` 3.4 % → estrategia (class weights /
+  re-muestreo / colapso de clases minoritarias) a decidir en Fase 3.
 
 ## Ethical Considerations
 - El modelo **no** verifica hechos; reproduce el juicio de una sola organización
@@ -48,5 +50,6 @@
   Model Card, el README y el [Data Statement](DATA_STATEMENT.md).
 
 ## Caveats & Recommendations
-- Corpus pequeño y sesgado → resultados no generalizan fuera de ColombiaCheck.
+- Corpus de tamaño moderado (~4.756) pero sesgado y de una sola fuente →
+  los resultados no generalizan fuera de ColombiaCheck.
 - Recomendado como artefacto didáctico, no productivo.

@@ -26,14 +26,29 @@ acompañada de documentación de gobernanza de datos y modelos: **Model Card**,
 
 ## Hallazgos del reconocimiento (Fase 1)
 
-<!-- NUMEROS_RECON: se rellenan al terminar el recon completo -->
-- **Marcado ClaimReview** presente en ~80 % de los artículos muestreados →
-  el corpus puede construirse desde **datos estructurados** en lugar de
-  scraping de texto completo (vía éticamente más limpia).
-- Campos fiables por artículo: `claim_reviewed` (texto de la afirmación) y
-  `verdict` (etiqueta). `claimant` y `tags` **no** son fiables en el JSON-LD.
-- Distribución de veredictos fuertemente sesgada hacia `Falso` → el
-  **desbalance de clases** será el reto central del modelo.
+Recon completo (crawl de listados, `2026-07-20`): **4.756 chequeos únicos**,
+rango temporal muestreado `2020-03-24` → `2026-02-27`.
+
+**Distribución de veredictos** (n = 4.756):
+
+| Veredicto | n | % |
+|-----------|----:|----:|
+| Falso | 3.093 | 65.0 % |
+| Cuestionable | 940 | 19.8 % |
+| Chequeo Múltiple | 273 | 5.7 % |
+| Verdadero pero | 197 | 4.1 % |
+| Verdadero | 161 | 3.4 % |
+| *(sin etiqueta)* | 92 | 1.9 % |
+
+- **n ≥ 2.000 con etiquetas limpias → viable para fine-tuning de BETO.** ✅
+- **Desbalance fuerte:** `Falso` (65 %) vs. `Verdadero` (3.4 %) → reto central
+  del modelo; se documenta en la [Model Card](docs/MODEL_CARD.md).
+- **Marcado ClaimReview** en ~68 % del muestreo histórico (más alto, ~80 %, en
+  artículos recientes) → el corpus puede construirse desde **datos
+  estructurados** en vez de scraping de texto completo. El ~32 % restante
+  (artículos antiguos sin markup) requiere fallback en HTML o exclusión.
+- Campos fiables: `claim_reviewed` (texto, ~68 % de cobertura) y `verdict`.
+  `claimant` y `tags` **no** son fiables en el JSON-LD (0 % en el muestreo).
 
 ## Estructura
 
