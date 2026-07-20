@@ -35,7 +35,7 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/polux9589/NLP-Fake-News-Colombia"
+Repository = "https://github.com/POLUX89/NLP-Fake-News-Colombia"
 
 [build-system]
 requires = ["setuptools>=68"]
