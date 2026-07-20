@@ -1,0 +1,11 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Scraper artifacts (regenerable; not committed)
+recon_cache/
+recon_output/
+
+# OS
+.DS_Store
