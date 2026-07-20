@@ -1,5 +1,9 @@
 # NLP · Fake News Colombia — verdict classification over ColombiaCheck
 
+[![CI](https://github.com/POLUX89/NLP-Fake-News-Colombia/actions/workflows/ci.yml/badge.svg)](https://github.com/POLUX89/NLP-Fake-News-Colombia/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.13-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 Clasificación NLP del **veredicto** de chequeos de [ColombiaCheck](https://colombiacheck.com)
 (`Falso` / `Cuestionable` / `Verdadero` / `Verdadero pero` / `Chequeo Múltiple`),
 acompañada de documentación de gobernanza de datos y modelos: **Model Card**,
