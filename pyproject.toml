@@ -3,9 +3,9 @@ name = "fake-news-colombia"
 version = "0.1.0"
 description = "NLP verdict classification over ColombiaCheck fact-checks, with model cards, datasheets and data statements."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.14"
 license = { text = "MIT" }
-authors = [{ name = "Daniel Felipe Sacristán" }]
+authors = [{ name = "Daniel Felipe Sacristán Ávila" }]
 keywords = ["nlp", "fact-checking", "spanish", "beto", "misinformation", "colombia"]
 
 dependencies = [

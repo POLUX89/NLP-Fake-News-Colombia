@@ -6,7 +6,7 @@
 ## Motivation
 - **¿Para qué se creó?** Entrenar/evaluar un clasificador NLP del veredicto de
   chequeos y servir de artefacto de portfolio con documentación de gobernanza.
-- **¿Quién lo creó?** Daniel Felipe Sacristán.
+- **¿Quién lo creó?** Daniel Felipe Sacristán Ávila.
 - **¿Quién lo financió?** Proyecto personal, sin financiación.
 
 ## Composition

@@ -4,7 +4,7 @@
 > Los campos marcados con `TODO` se completan al terminar la Fase 3.
 
 ## Model Details
-- **Desarrollado por:** Daniel Felipe Sacristán (portfolio personal).
+- **Desarrollado por:** Daniel Felipe Sacristán Ávila (portfolio personal).
 - **Fecha:** `TODO`
 - **Versión:** 0.1.0 (sin entrenar aún).
 - **Tipo:** Clasificador de texto multiclase; fine-tuning de **BETO**
