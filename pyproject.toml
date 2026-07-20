@@ -16,6 +16,18 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Exploratory data analysis (Phase 2 notebook). pandas is also a base
+# dependency; it is repeated here so `pip install -e ".[eda]"` is self-describing.
+eda = [
+    "matplotlib>=3.8",
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "seaborn>=0.13",
+    "missingno>=0.5",
+    "scipy>=1.11",
+    "statsmodels>=0.14",
+    "ipykernel>=6.29",
+]
 # NLP training stack — added in Phase 3, kept optional so the recon/data
 # tooling installs without pulling heavy deep-learning wheels.
 nlp = [
