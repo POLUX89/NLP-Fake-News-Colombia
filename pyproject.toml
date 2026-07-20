@@ -60,5 +60,10 @@ where = ["src"]
 target-version = "py313"
 line-length = 88
 
+[tool.ruff.lint.per-file-ignores]
+# Exploratory notebooks: allow top-of-file imports used further down and
+# imports before code — normal in EDA, not real defects.
+"*.ipynb" = ["F401", "E402"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

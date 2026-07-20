@@ -6,6 +6,9 @@ __pycache__/
 build/
 dist/
 
+# Jupyter
+.ipynb_checkpoints/
+
 # Scraper artifacts (regenerable; not committed)
 recon_cache/
 recon_output/
