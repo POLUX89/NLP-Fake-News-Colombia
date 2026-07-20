@@ -1,0 +1,52 @@
+[project]
+name = "fake-news-colombia"
+version = "0.1.0"
+description = "NLP verdict classification over ColombiaCheck fact-checks, with model cards, datasheets and data statements."
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "MIT" }
+authors = [{ name = "Daniel Felipe Sacristán" }]
+keywords = ["nlp", "fact-checking", "spanish", "beto", "misinformation", "colombia"]
+
+dependencies = [
+    "requests>=2.32",
+    "beautifulsoup4>=4.13",
+    "lxml>=5.2",
+    "pandas>=2.2",
+]
+
+[project.optional-dependencies]
+# NLP training stack — added in Phase 3, kept optional so the recon/data
+# tooling installs without pulling heavy deep-learning wheels.
+nlp = [
+    "torch>=2.3",
+    "transformers>=4.44",
+    "datasets>=2.20",
+    "scikit-learn>=1.5",
+    "accelerate>=0.33",
+]
+# Streamlit demo — Phase 4.
+app = [
+    "streamlit>=1.37",
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[project.urls]
+Repository = "https://github.com/polux9589/Fake_News_Colombia"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
