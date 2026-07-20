@@ -36,19 +36,19 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+from fake_news_co.paths import CLAIMS_CSV, RECON_CSV, ROOT
+
 # --- reuse the recon's polite fetcher + JSON-LD extractor -------------------
 # The recon lives as a top-level script at the repo root; load it by path so
 # this packaged module does not duplicate the (carefully debugged) scraping
 # logic. Same mechanism the test suite uses.
-ROOT = Path(__file__).resolve().parents[2]
 _spec = importlib.util.spec_from_file_location(
     "colombiacheck_recon", ROOT / "colombiacheck_recon.py"
 )
 recon = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(recon)
 
-RECON_CSV = ROOT / "recon_output" / "chequeos_recon.csv"
-OUT_CSV = ROOT / "data" / "raw" / "claims.csv"
+OUT_CSV = CLAIMS_CSV
 CHECKPOINT_EVERY = 50
 
 OUT_COLUMNS = [
