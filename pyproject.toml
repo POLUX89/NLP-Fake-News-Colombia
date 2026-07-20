@@ -1,5 +1,5 @@
 [project]
-name = "fake-news-colombia"
+name = "nlp-fake-news-colombia"
 version = "0.1.0"
 description = "NLP verdict classification over ColombiaCheck fact-checks, with model cards, datasheets and data statements."
 readme = "README.md"
@@ -35,7 +35,7 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/polux9589/Fake_News_Colombia"
+Repository = "https://github.com/polux9589/NLP-Fake-News-Colombia"
 
 [build-system]
 requires = ["setuptools>=68"]

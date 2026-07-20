@@ -1,4 +1,4 @@
-# Fake News Colombia — NLP verdict classification over ColombiaCheck
+# NLP · Fake News Colombia — verdict classification over ColombiaCheck
 
 Clasificación NLP del **veredicto** de chequeos de [ColombiaCheck](https://colombiacheck.com)
 (`Falso` / `Cuestionable` / `Verdadero` / `Verdadero pero` / `Chequeo Múltiple`),
