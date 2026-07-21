@@ -29,6 +29,7 @@ eda = [
     "scikit-learn>=1.5",  # t-SNE (sklearn.manifold.TSNE) for word-vector plots
     "gensim>=4.3.3",      # Word2Vec (>=4.3.3 supports numpy 2 / scipy 1.13+)
     "nltk>=3.9",          # Spanish tokenization + stopwords for the Word2Vec EDA
+    "transformers>=4.44", # BETO tokenizer only (subword-length check); no torch here
     "ipykernel>=6.29",
 ]
 # NLP training stack — added in Phase 3, kept optional so the recon/data
