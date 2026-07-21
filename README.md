@@ -4,93 +4,131 @@
 ![Python](https://img.shields.io/badge/python-3.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-Clasificación NLP del **veredicto** de chequeos de [ColombiaCheck](https://colombiacheck.com)
-(`Falso` / `Cuestionable` / `Verdadero` / `Verdadero pero` / `Chequeo Múltiple`),
-acompañada de documentación de gobernanza de datos y modelos: **Model Card**,
-**Datasheet** y **Data Statement**.
+NLP classification of the fact-check **verdict** assigned by
+[ColombiaCheck](https://colombiacheck.com), from the text of the claim being
+checked, together with data- and model-governance documentation: **Model Card**,
+**Datasheet** and **Data Statement**.
 
-> ⚠️ **Qué es y qué no es este proyecto.**
-> El modelo aprende a reproducir **cómo ColombiaCheck etiquetó** cada afirmación,
-> a partir del texto de la afirmación. **No** es un detector de verdad ni un
-> "detector de noticias falsas": aprende rasgos superficiales y temas
-> correlacionados con las etiquetas de una única organización. Esta limitación se
-> documenta explícitamente en la [Model Card](docs/MODEL_CARD.md) y el
-> [Data Statement](docs/DATA_STATEMENT.md). Tratarla con honestidad es parte
-> central del objetivo de este repositorio.
+> ⚠️ **What this project is — and is not.**
+> The model learns to reproduce **how ColombiaCheck labeled** each claim, from the
+> claim text. It is **not** a truth detector nor a "fake-news detector": it learns
+> surface features and topics correlated with the labels of a **single**
+> organization. This limitation is stated explicitly in the
+> [Model Card](docs/MODEL_CARD.md) and [Data Statement](docs/DATA_STATEMENT.md).
+> Treating it honestly is a central goal of this repository.
 
-## Fases del proyecto
+## Project phases
 
-| Fase | Estado | Entregable |
-|------|--------|-----------|
-| 0 · Entorno + repo | ✅ | `pyproject.toml` (Python 3.13), estructura, `.gitignore` |
-| 1 · Reconocimiento | ✅ | [`colombiacheck_recon.py`](colombiacheck_recon.py) → `recon_output/` |
-| 2 · Adquisición de datos | ⬜ | Corpus `(afirmación → veredicto)` desde datos estructurados / Fact Check Tools API |
-| 3 · Modelo NLP | ⬜ | Fine-tuning de BETO (BERT en español), clasificación multiclase |
-| 4 · Gobernanza + demo | ⬜ | Model Card · Datasheet · Data Statement · app Streamlit |
+| Phase | Status | Deliverable |
+|-------|--------|-------------|
+| 0 · Environment + repo | ✅ | `pyproject.toml` (Python 3.13), structure, CI, pre-commit |
+| 1 · Reconnaissance | ✅ | [`colombiacheck_recon.py`](colombiacheck_recon.py) → `recon_output/` |
+| 2 · Data acquisition + EDA | ✅ | claim corpus (`data/raw/claims.csv`) + [`notebooks/01_EDA.ipynb`](notebooks/01_EDA.ipynb) |
+| 3 · NLP model | ⬜ | BETO (Spanish BERT) fine-tuning, 3-class |
+| 4 · Governance + demo | 🚧 | Datasheet ✅ · Data Statement / Model Card (pending) · Streamlit app |
 
-## Hallazgos del reconocimiento (Fase 1)
+## The corpus
 
-Recon completo (crawl de listados, `2026-07-20`): **4.756 chequeos únicos**,
-rango temporal muestreado `2020-03-24` → `2026-02-27`.
+Built by harvesting the **ClaimReview markup (schema.org JSON-LD)** of every
+chequeo with [`src/fake_news_co/acquisition.py`](src/fake_news_co/acquisition.py).
 
-**Distribución de veredictos** (n = 4.756):
+- **4,756** unique chequeos in the archive (recon `2026-07-20`).
+- **2,941** carry a `claim_reviewed` (61.8%); after de-duplicating on the claim
+  text → **2,937** modeling instances. Time span `2018-10-26` → `2026-07-16`.
+- **Model input = `claim_reviewed`**: the *neutral* claim as originally made
+  (~10 words), **not** the article headline. The headline states the verdict
+  (e.g. *"No, this image is not…"*) and would leak the label; the neutral claim
+  does not. The full article body is deliberately **not** collected (it argues
+  the verdict → even worse leakage, plus copyright).
+- **Label = `rating`** (the ClaimReview `reviewRating`), **not** the listing
+  `verdict`. The listing verdict is derived from card text by a fragile
+  first-match heuristic that mislabels any headline containing the word
+  *"verdadero"*; `rating` comes from structured markup and is complete. See the
+  [Datasheet](docs/DATASHEET.md).
 
-| Veredicto | n | % |
-|-----------|----:|----:|
-| Falso | 3.093 | 65.0 % |
-| Cuestionable | 940 | 19.8 % |
-| Chequeo Múltiple | 273 | 5.7 % |
-| Verdadero pero | 197 | 4.1 % |
-| Verdadero | 161 | 3.4 % |
-| *(sin etiqueta)* | 92 | 1.9 % |
+**Modeling target** (3 classes, after merging `Verdadero pero` into `Verdadero`):
 
-- **n ≥ 2.000 con etiquetas limpias → viable para fine-tuning de BETO.** ✅
-- **Desbalance fuerte:** `Falso` (65 %) vs. `Verdadero` (3.4 %) → reto central
-  del modelo; se documenta en la [Model Card](docs/MODEL_CARD.md).
-- **Marcado ClaimReview** en ~68 % del muestreo histórico (más alto, ~80 %, en
-  artículos recientes) → el corpus puede construirse desde **datos
-  estructurados** en vez de scraping de texto completo. El ~32 % restante
-  (artículos antiguos sin markup) requiere fallback en HTML o exclusión.
-- Campos fiables: `claim_reviewed` (texto, ~68 % de cobertura) y `verdict`.
-  `claimant` y `tags` **no** son fiables en el JSON-LD (0 % en el muestreo).
+| Label | n | % |
+|-------|----:|----:|
+| Falso | 2,247 | 76.5 % |
+| Cuestionable | 597 | 20.3 % |
+| Verdadero | 93 | 3.2 % |
 
-## Estructura
+**Central challenge:** severe class imbalance (and only ~10 words of text per
+claim) → macro-F1 as the metric, and class-weighting / resampling in Phase 3.
+The ClaimReview selection is non-random and disproportionately drops the minority
+classes; this bias is quantified in the Datasheet and Data Statement.
+
+## Exploratory analysis (EDA)
+
+Full analysis in [`notebooks/01_EDA.ipynb`](notebooks/01_EDA.ipynb). Figures below
+are from the **2026-07 snapshot** (data cutoff `2026-07-16`) and are regenerated
+when the corpus is refreshed.
+
+**Label distribution** — severe imbalance after merging `Verdadero pero` into `Verdadero`:
+
+![Label distribution](assets/label_distribution.png)
+
+**Claim length** — claims are short (~10 words, max 17) and length does not separate the classes:
+
+![Corpus length distribution by class](assets/corpus_length_distribution.png)
+
+**Most frequent terms per class** — the same terms (`petro`, `video`, `colombia`) top every
+class, so topic alone does not distinguish the verdict:
+
+![Top terms per class](assets/top_terms_per_class.png)
+
+**Word2Vec + t-SNE** of the 50 most frequent tokens (colored by frequency), showing topical
+clusters (Venezuela politics, COVID/vaccines, armed conflict):
+
+![t-SNE of Word2Vec embeddings](assets/tsne_word2vec.png)
+
+## Structure
 
 ```
 .
-├── colombiacheck_recon.py   # Fase 1: scraper de reconocimiento (existente)
-├── src/fake_news_co/        # paquete: adquisición, features, modelo
-├── data/raw/                # datos crudos (ignorado por git)
-├── data/processed/          # corpus limpio (ignorado por git)
-├── models/                  # checkpoints (ignorado por git)
-├── notebooks/               # exploración (EDA)
-├── app/                     # demo Streamlit (Fase 4)
-├── docs/                    # MODEL_CARD · DATASHEET · DATA_STATEMENT
+├── colombiacheck_recon.py      # Phase 1: reconnaissance scraper
+├── src/fake_news_co/
+│   ├── paths.py                # canonical, root-anchored paths
+│   └── acquisition.py          # Phase 2: harvest claim_reviewed
+├── notebooks/01_EDA.ipynb      # Phase 2: exploratory analysis
+├── assets/                     # EDA figures embedded in this README
+├── data/{raw,processed}/       # datasets (git-ignored)
+├── models/                     # checkpoints (git-ignored)
+├── app/                        # Streamlit demo (Phase 4)
+├── docs/                       # MODEL_CARD · DATASHEET · DATA_STATEMENT
 └── tests/
 ```
 
-## Uso
+## Usage
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
-pip install -e .                 # deps base (recon + datos)
-pip install -e ".[nlp,app,dev]"  # stack completo (modelo + demo + dev)
+pip install -e ".[dev]"              # base deps (recon + acquisition)
+pip install -e ".[eda,nlp,app,dev]"  # full stack (notebook + model + demo)
+pre-commit install                   # strips notebook outputs on commit
 
-# Reconocimiento
+# Phase 1 — reconnaissance
 python colombiacheck_recon.py --max-pages 5   # smoke test
-python colombiacheck_recon.py                 # archivo completo
+python colombiacheck_recon.py                 # full archive
+
+# Phase 2 — harvest the claim corpus (resumable, ~2 h; cached)
+python -m fake_news_co.acquisition --limit 5  # smoke test
+python -m fake_news_co.acquisition            # full harvest
 ```
 
-## Ética y procedencia
+## Ethics & provenance
 
-- El scraper respeta `robots.txt` (`/chequeos` está permitido), se identifica en
-  el `User-Agent`, cachea localmente y aplica *throttling* de 1.5 s.
-- El corpus prioriza **datos estructurados públicos (ClaimReview)** sobre la
-  cosecha de cuerpos completos. Cualquier uso de texto completo requiere contacto
-  previo con ColombiaCheck (`contacto@colombiacheck.com`).
-- Detalles completos en el [Datasheet](docs/DATASHEET.md).
+- The scraper respects `robots.txt` (`/chequeos` is allowed), identifies itself
+  in the `User-Agent`, caches locally, and throttles at 1.5 s.
+- The corpus is built from **public structured data (ClaimReview)**, not
+  full-text scraping. Any full-text use requires prior contact with ColombiaCheck
+  (`contacto@colombiacheck.com`).
+- Chequeo text is **not** redistributed: `data/` is git-ignored and an
+  `nbstripout` pre-commit hook strips notebook outputs so raw claim text never
+  lands in the repo. Full details in the [Datasheet](docs/DATASHEET.md).
 
-## Licencia
+## License
 
-Código bajo licencia MIT. Los textos de los chequeos son propiedad de
-ColombiaCheck y **no** se redistribuyen en este repositorio.
+MIT for the code. Chequeo texts are ColombiaCheck's property and are **not**
+redistributed in this repository.
