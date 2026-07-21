@@ -26,6 +26,8 @@ eda = [
     "missingno>=0.5",
     "scipy>=1.11",
     "statsmodels>=0.14",
+    "scikit-learn>=1.5",  # t-SNE (sklearn.manifold.TSNE) for word-vector plots
+    "gensim>=4.3.3",      # Word2Vec (>=4.3.3 supports numpy 2 / scipy 1.13+)
     "ipykernel>=6.29",
 ]
 # NLP training stack — added in Phase 3, kept optional so the recon/data
@@ -36,6 +38,7 @@ nlp = [
     "datasets>=2.20",
     "scikit-learn>=1.5",
     "accelerate>=0.33",
+    "gensim>=4.3.3",
 ]
 # Streamlit demo — Phase 4.
 app = [
