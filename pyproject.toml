@@ -67,9 +67,10 @@ target-version = "py313"
 line-length = 88
 
 [tool.ruff.lint.per-file-ignores]
-# Exploratory notebooks: allow top-of-file imports used further down and
-# imports before code — normal in EDA, not real defects.
-"*.ipynb" = ["F401", "E402"]
+# Exploratory notebooks: allow patterns that are idiomatic in EDA but flagged by
+# default — imports used further down (F401), imports after code (E402), and
+# compact one-liners / semicolon-separated statements (E701-E703).
+"*.ipynb" = ["F401", "E402", "E701", "E702", "E703"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
