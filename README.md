@@ -59,6 +59,30 @@ claim) → macro-F1 as the metric, and class-weighting / resampling in Phase 3.
 The ClaimReview selection is non-random and disproportionately drops the minority
 classes; this bias is quantified in the Datasheet and Data Statement.
 
+## Exploratory analysis (EDA)
+
+Full analysis in [`notebooks/01_EDA.ipynb`](notebooks/01_EDA.ipynb). Figures below
+are from the **2026-07 snapshot** (data cutoff `2026-07-16`) and are regenerated
+when the corpus is refreshed.
+
+**Label distribution** — severe imbalance after merging `Verdadero pero` into `Verdadero`:
+
+![Label distribution](assets/label_distribution.png)
+
+**Claim length** — claims are short (~10 words, max 17) and length does not separate the classes:
+
+![Corpus length distribution by class](assets/corpus_length_distribution.png)
+
+**Most frequent terms per class** — the same terms (`petro`, `video`, `colombia`) top every
+class, so topic alone does not distinguish the verdict:
+
+![Top terms per class](assets/top_terms_per_class.png)
+
+**Word2Vec + t-SNE** of the 50 most frequent tokens (colored by frequency), showing topical
+clusters (Venezuela politics, COVID/vaccines, armed conflict):
+
+![t-SNE of Word2Vec embeddings](assets/tsne_word2vec.png)
+
 ## Structure
 
 ```
@@ -68,6 +92,7 @@ classes; this bias is quantified in the Datasheet and Data Statement.
 │   ├── paths.py                # canonical, root-anchored paths
 │   └── acquisition.py          # Phase 2: harvest claim_reviewed
 ├── notebooks/01_EDA.ipynb      # Phase 2: exploratory analysis
+├── assets/                     # EDA figures embedded in this README
 ├── data/{raw,processed}/       # datasets (git-ignored)
 ├── models/                     # checkpoints (git-ignored)
 ├── app/                        # Streamlit demo (Phase 4)
