@@ -10,7 +10,7 @@ reproducible code instead of notebook state:
   4. Merge      `Verdadero pero` -> `Verdadero`  =>  three classes.
   5. Dedup      drop duplicate claim texts (prevents train/test leakage).
   6. Binary     add a secondary `Falso` vs `no-Falso` target.
-  7. Split      stratified 80/10/10 hold-out with a fixed seed, frozen here.
+  7. Split      stratified 70/15/15 hold-out with a fixed seed, frozen here.
 
 **Golden rule:** the split is computed here, once, and frozen. Any resampling
 (class weights, or SMOTE on the TF-IDF baseline) happens later and only on the
@@ -43,7 +43,7 @@ RATING_MERGE = {"Verdadero pero": "Verdadero"}
 LABELS = ["Falso", "Cuestionable", "Verdadero"]
 BINARY_POSITIVE = "Falso"  # the majority / class of interest for the binary task
 
-SPLIT_FRACTIONS = {"train": 0.8, "val": 0.1, "test": 0.1}
+SPLIT_FRACTIONS = {"train": 0.7, "val": 0.15, "test": 0.15}
 
 
 def load_claims(path: Path = CLAIMS_CSV) -> pd.DataFrame:
