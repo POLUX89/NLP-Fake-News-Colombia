@@ -24,8 +24,8 @@ checked, together with data- and model-governance documentation: **Model Card**,
 | 0 · Environment + repo | ✅ | `pyproject.toml` (Python 3.13), structure, CI, pre-commit |
 | 1 · Reconnaissance | ✅ | [`colombiacheck_recon.py`](colombiacheck_recon.py) → `recon_output/` |
 | 2 · Data acquisition + EDA | ✅ | claim corpus (`data/raw/claims.csv`) + [`notebooks/01_EDA.ipynb`](notebooks/01_EDA.ipynb) |
-| 3 · NLP model | ⬜ | BETO (Spanish BERT) fine-tuning, 3-class |
-| 4 · Governance + demo | 🚧 | Datasheet ✅ · Data Statement / Model Card (pending) · Streamlit app |
+| 3 · Data pipeline + NLP model | ✅ | [`features.py`](src/fake_news_co/features.py) (frozen 70/15/15 split) · TF-IDF baseline · fine-tuned BETO ([`model.py`](src/fake_news_co/model.py), [`notebooks/02_MODELING.ipynb`](notebooks/02_MODELING.ipynb)) |
+| 4 · Governance + demo | 🚧 | Datasheet ✅ · Model Card ✅ · Data Statement ✅ · Streamlit app + HF Hub release (pending) |
 
 ## The corpus
 
@@ -34,7 +34,10 @@ chequeo with [`src/fake_news_co/acquisition.py`](src/fake_news_co/acquisition.py
 
 - **4,756** unique chequeos in the archive (recon `2026-07-20`).
 - **2,941** carry a `claim_reviewed` (61.8%); after de-duplicating on the claim
-  text → **2,937** modeling instances. Time span `2018-10-26` → `2026-07-16`.
+  text and dropping 2 URL-only "claims" → **2,935** modeling instances, with a
+  stratified 70/15/15 split **frozen** by
+  [`features.py`](src/fake_news_co/features.py) (seed 42). Time span
+  `2018-10-26` → `2026-07-16`.
 - **Model input = `claim_reviewed`**: the *neutral* claim as originally made
   (~10 words), **not** the article headline. The headline states the verdict
   (e.g. *"No, this image is not…"*) and would leak the label; the neutral claim
@@ -50,20 +53,22 @@ chequeo with [`src/fake_news_co/acquisition.py`](src/fake_news_co/acquisition.py
 
 | Label | n | % |
 |-------|----:|----:|
-| Falso | 2,247 | 76.5 % |
+| Falso | 2,245 | 76.5 % |
 | Cuestionable | 597 | 20.3 % |
 | Verdadero | 93 | 3.2 % |
 
 **Central challenge:** severe class imbalance (and only ~10 words of text per
-claim) → macro-F1 as the metric, and class-weighting / resampling in Phase 3.
-The ClaimReview selection is non-random and disproportionately drops the minority
+claim) → macro-F1 as the metric, and class weighting during training. The
+ClaimReview selection is non-random and disproportionately drops the minority
 classes; this bias is quantified in the Datasheet and Data Statement.
 
 ## Exploratory analysis (EDA)
 
-Full analysis in [`notebooks/01_EDA.ipynb`](notebooks/01_EDA.ipynb). Figures below
-are from the **2026-07 snapshot** (data cutoff `2026-07-16`) and are regenerated
-when the corpus is refreshed.
+Full analysis in [`notebooks/01_EDA.ipynb`](notebooks/01_EDA.ipynb). All figures
+in this README come from the **2026-07 snapshot** (data cutoff `2026-07-16`) and
+are regenerated with one command —
+[`python -m fake_news_co.figures`](src/fake_news_co/figures.py) — so a future
+data refresh only needs to rebuild the dataset and rerun it.
 
 **Label distribution** — severe imbalance after merging `Verdadero pero` into `Verdadero`:
 
@@ -83,6 +88,32 @@ clusters (Venezuela politics, COVID/vaccines, armed conflict):
 
 ![t-SNE of Word2Vec embeddings](assets/tsne_word2vec.png)
 
+## Model results
+
+Experiments in [`notebooks/02_MODELING.ipynb`](notebooks/02_MODELING.ipynb),
+codified in [`model.py`](src/fake_news_co/model.py). Model selection on **val**;
+**test evaluated once** with the saved final model. Full details in the
+[Model Card](docs/MODEL_CARD.md).
+
+| Model | macro-F1 (val) | macro-F1 (test) | Falso F1 | Cuestionable F1 | Verdadero F1 |
+|---|---|---|---|---|---|
+| TF-IDF + LogReg (`class_weight`) | 0.398 | 0.386 | 0.743 | 0.351 | 0.065 |
+| **BETO (weighted loss)** | **0.449** | **0.405** | **0.806** | **0.410** | 0.000 |
+
+![Baseline vs BETO macro-F1](assets/model_comparison.png)
+
+- **BETO beats the TF-IDF baseline** (+0.05 val / +0.02 test macro-F1), with clear
+  gains on `Falso` (0.806) and `Cuestionable` (0.410). A SMOTE variant of the
+  baseline was statistically equivalent to class weighting and was discarded.
+- Bootstrap **95% CI** for BETO's test macro-F1: **[0.371, 0.440]**.
+- **The honest headline: `Verdadero` scores 0.0 on test.** All 14 test examples
+  are misclassified despite a ~10x class weight — the structural scarcity
+  measured in the EDA (93 examples, fading over time: 33 in 2020 → 2 in 2026).
+  In practice the model is a `Falso`/`Cuestionable` discriminator; presenting it
+  as a truth detector would be a misuse (see the Model Card).
+
+![BETO test confusion matrix](assets/confusion_matrix_test.png)
+
 ## Structure
 
 ```
@@ -90,11 +121,16 @@ clusters (Venezuela politics, COVID/vaccines, armed conflict):
 ├── colombiacheck_recon.py      # Phase 1: reconnaissance scraper
 ├── src/fake_news_co/
 │   ├── paths.py                # canonical, root-anchored paths
-│   └── acquisition.py          # Phase 2: harvest claim_reviewed
-├── notebooks/01_EDA.ipynb      # Phase 2: exploratory analysis
-├── assets/                     # EDA figures embedded in this README
+│   ├── acquisition.py          # Phase 2: harvest claim_reviewed
+│   ├── features.py             # Phase 3: clean + label + frozen 70/15/15 split
+│   ├── model.py                # Phase 3: BETO train / evaluate / predict (CLI)
+│   └── figures.py              # regenerates every README figure (CLI)
+├── notebooks/
+│   ├── 01_EDA.ipynb            # Phase 2: exploratory analysis
+│   └── 02_MODELING.ipynb       # Phase 3: baseline + BETO experiments
+├── assets/                     # README figures (regenerated by figures.py)
 ├── data/{raw,processed}/       # datasets (git-ignored)
-├── models/                     # checkpoints (git-ignored)
+├── models/                     # trained model + metrics JSONs (git-ignored)
 ├── app/                        # Streamlit demo (Phase 4)
 ├── docs/                       # MODEL_CARD · DATASHEET · DATA_STATEMENT
 └── tests/
@@ -115,6 +151,14 @@ python colombiacheck_recon.py                 # full archive
 # Phase 2 — harvest the claim corpus (resumable, ~2 h; cached)
 python -m fake_news_co.acquisition --limit 5  # smoke test
 python -m fake_news_co.acquisition            # full harvest
+
+# Phase 3 — build the modeling dataset (frozen split) and train/evaluate
+python -m fake_news_co.features               # -> data/processed/dataset.csv
+python -m fake_news_co.model train            # fine-tune BETO (MPS/CUDA/CPU)
+python -m fake_news_co.model evaluate --split test
+
+# Figures — regenerate every README image from the frozen artifacts
+python -m fake_news_co.figures
 ```
 
 ## Ethics & provenance

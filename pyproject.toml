@@ -41,6 +41,7 @@ nlp = [
     "scikit-learn>=1.5",
     "accelerate>=0.33",
     "gensim>=4.3.3",
+    "imbalanced-learn>=0.12",  # SMOTE for the TF-IDF baseline variant
 ]
 # Streamlit demo — Phase 4.
 app = [

@@ -23,6 +23,7 @@ DATA_PROCESSED = DATA / "processed"
 MODELS = ROOT / "models"
 RECON_OUTPUT = ROOT / "recon_output"
 NOTEBOOKS = ROOT / "notebooks"
+ASSETS = ROOT / "assets"
 
 # Well-known files.
 RECON_CSV = RECON_OUTPUT / "chequeos_recon.csv"
@@ -36,6 +37,7 @@ __all__ = [
     "MODELS",
     "RECON_OUTPUT",
     "NOTEBOOKS",
+    "ASSETS",
     "RECON_CSV",
     "CLAIMS_CSV",
 ]
