@@ -11,6 +11,9 @@ Run:
 import pandas as pd
 import streamlit as st
 
+# Semver of the deployed demo — keep in sync with `version` in pyproject.toml.
+APP_VERSION = "0.1.0"
+
 HUB_MODEL = "polux89/beto-colombiacheck"
 GITHUB_URL = "https://github.com/POLUX89/NLP-Fake-News-Colombia"
 HUB_URL = f"https://huggingface.co/{HUB_MODEL}"
@@ -54,7 +57,10 @@ with st.sidebar:
         "ejemplos (escasez estructural, documentada en el Model Card)."
     )
     st.markdown(f"[📂 Repositorio]({GITHUB_URL}) · [🤗 Model card]({HUB_URL})")
-    st.caption("Los textos de los chequeos son propiedad de ColombiaCheck.")
+    st.caption(
+        f"Demo v{APP_VERSION} · Los textos de los chequeos son propiedad "
+        "de ColombiaCheck."
+    )
 
 # --------------------------------------------------------------------- main
 st.title("🔎 ColombiaCheck Verdict Classifier")
