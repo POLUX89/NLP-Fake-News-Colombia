@@ -1,4 +1,8 @@
-beautifulsoup4==4.15.0
-lxml==6.1.1
-pandas==3.0.3
-requests==2.34.2
+# Deployment manifest for Streamlit Community Cloud (it reads this root file).
+# Mirrors the `[app]` extra in pyproject.toml — the demo's runtime deps only.
+# For local development install the package extras instead: pip install -e ".[dev]"
+--extra-index-url https://download.pytorch.org/whl/cpu
+streamlit>=1.37
+torch>=2.3
+transformers>=4.44
+pandas>=2.2
