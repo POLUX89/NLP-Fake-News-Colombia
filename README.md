@@ -4,11 +4,14 @@
 ![Python](https://img.shields.io/badge/python-3.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 [![Model on HF](https://img.shields.io/badge/%F0%9F%A4%97%20Hub-beto--colombiacheck-yellow)](https://huggingface.co/polux89/beto-colombiacheck)
+[![Live demo](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://beto-colombiacheck.streamlit.app)
 
 NLP classification of the fact-check **verdict** assigned by
 [ColombiaCheck](https://colombiacheck.com), from the text of the claim being
 checked, together with data- and model-governance documentation: **Model Card**,
 **Datasheet** and **Data Statement**.
+
+**▶ Try the live demo:** [beto-colombiacheck.streamlit.app](https://beto-colombiacheck.streamlit.app)
 
 > ⚠️ **What this project is — and is not.**
 > The model learns to reproduce **how ColombiaCheck labeled** each claim, from the
@@ -26,7 +29,7 @@ checked, together with data- and model-governance documentation: **Model Card**,
 | 1 · Reconnaissance | ✅ | [`colombiacheck_recon.py`](colombiacheck_recon.py) → `recon_output/` |
 | 2 · Data acquisition + EDA | ✅ | claim corpus (`data/raw/claims.csv`) + [`notebooks/01_EDA.ipynb`](notebooks/01_EDA.ipynb) |
 | 3 · Data pipeline + NLP model | ✅ | [`features.py`](src/fake_news_co/features.py) (frozen 70/15/15 split) · TF-IDF baseline · fine-tuned BETO ([`model.py`](src/fake_news_co/model.py), [`notebooks/02_MODELING.ipynb`](notebooks/02_MODELING.ipynb)) |
-| 4 · Governance + demo | ✅ | Datasheet · Model Card · Data Statement · [model on the HF Hub](https://huggingface.co/polux89/beto-colombiacheck) · [Streamlit demo](app/streamlit_app.py) |
+| 4 · Governance + demo | ✅ | Datasheet · Model Card · Data Statement · [model on the HF Hub](https://huggingface.co/polux89/beto-colombiacheck) · [live Streamlit demo](https://beto-colombiacheck.streamlit.app) |
 
 ## The corpus
 
@@ -99,7 +102,9 @@ codified in [`model.py`](src/fake_news_co/model.py). Model selection on **val**;
 The fine-tuned model is published on the Hugging Face Hub —
 **[`polux89/beto-colombiacheck`](https://huggingface.co/polux89/beto-colombiacheck)**
 (with its own [model card](docs/HUB_MODEL_CARD.md): CC BY 4.0, BETO citation,
-ColombiaCheck credit) — and powers the [Streamlit demo](app/streamlit_app.py):
+ColombiaCheck credit) — and powers the
+**[live Streamlit demo](https://beto-colombiacheck.streamlit.app)**
+([source](app/streamlit_app.py), hosted on Streamlit Community Cloud):
 
 ```python
 from transformers import pipeline
